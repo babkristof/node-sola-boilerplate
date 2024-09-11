@@ -8,6 +8,11 @@ const httpStatus = require('http-status');
 const morgan = require('./config/morgan');
 const passport = require('passport');
 const {jwtStrategy} = require('./config/passport');
+const {xss} = require('express-xss-sanitizer');
+const helmet = require('helmet');
+const mongoSanitizte = require('express-mongo-sanitize');
+const cors = require('cors');
+const {cspOptions, env} = require('./config/config');
 
 app.use(morgan.successHandler);
 app.use(morgan.errorHandler);
@@ -17,6 +22,21 @@ app.use(passport.initialize());
 passport.use('jwt',jwtStrategy);
 
 app.use(express.json());
+
+// security
+app.use(xss());
+app.use(helmet.contentSecurityPolicy({cspOptions}));
+app.use(mongoSanitizte());
+
+if(env === 'production') {
+    app.use(cors({origin: 'url'}));
+    app.options('*', cors({origin: 'url'}))
+} else {
+    //enabling all cors
+    app.use(cors());
+    app.options('*', cors());
+}
+
 app.use(blogRouter);
 app.use(authRouter);
 
