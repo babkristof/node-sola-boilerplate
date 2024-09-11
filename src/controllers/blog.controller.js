@@ -1,12 +1,13 @@
-const catchAsync = require("../utils/catchAsync");
-const {blogService} = require('../services');
-const httpStatus = require("http-status");
+const catchAsync = require('../utils/catchAsync');
+const { blogService } = require('../services');
+const httpStatus = require('http-status');
 
 const createBlog = catchAsync(async (req, res) => {
     await blogService.createBlog(req.body, req.user.id);
-    res
-        .status(httpStatus.CREATED)
-        .send({success: true, message: 'Blog created successfully'});
+    res.status(httpStatus.CREATED).send({
+        success: true,
+        message: 'Blog created successfully',
+    });
 });
 
 const getBlogs = catchAsync(async (req, res) => {
@@ -15,6 +16,6 @@ const getBlogs = catchAsync(async (req, res) => {
 });
 
 module.exports = {
-    createBlog, 
-    getBlogs
-}
+    createBlog,
+    getBlogs,
+};

@@ -6,16 +6,16 @@ const createBlogSchema = {
         title: joi.string().required(),
         description: joi.string().required(),
         createdBy: joi.string().custom(objectId).required(),
-    })
+    }),
 };
 
 const getBlogSchema = {
     body: joi.object().keys({
-      userId: joi.string().custom(objectId).required(),
+        userId: joi.string().custom(objectId).required(),
     }),
-  }; 
+};
 
 module.exports = {
     createBlogSchema,
-    getBlogSchema
-}
+    getBlogSchema,
+};

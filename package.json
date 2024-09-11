@@ -1,6 +1,10 @@
 {
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --check **/*.js",
+    "prettier:fix": "prettier --write **/*.js"
   },
   "dependencies": {
     "@meanie/mongoose-to-json": "^2.6.0",
@@ -24,6 +28,13 @@
     "winston": "^3.14.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "@eslint/js": "^9.10.0",
+    "eslint": "^9.10.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-security": "^3.0.1",
+    "globals": "^15.9.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3"
   }
 }

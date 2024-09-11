@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
-const toJson = require('@meanie/mongoose-to-json')
+const toJson = require('@meanie/mongoose-to-json');
 const userSchema = mongoose.Schema(
     {
         name: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
         },
         email: {
             type: String,
@@ -16,10 +16,10 @@ const userSchema = mongoose.Schema(
             trim: true,
             lowercase: true,
             validate(value) {
-                if(!validator.isEmail(value)) {
-                    throw new Error('Invalid email')
-                };
-            }
+                if (!validator.isEmail(value)) {
+                    throw new Error('Invalid email');
+                }
+            },
         },
         password: {
             type: String,
@@ -27,35 +27,37 @@ const userSchema = mongoose.Schema(
             trim: true,
             minlength: 8,
             validate(value) {
-                if(!validator.isStrongPassword(value)) {
-                    throw new Error('Password should contain atleast one uppercase and lowercase letter, number and special character')
-                };
+                if (!validator.isStrongPassword(value)) {
+                    throw new Error(
+                        'Password should contain atleast one uppercase and lowercase letter, number and special character',
+                    );
+                }
             },
-            private: true
-        }
+            private: true,
+        },
     },
     {
-        timestamps: true
-    }
+        timestamps: true,
+    },
 );
 
 userSchema.statics.isEmailTaken = async function (email) {
-    const user = await this.findOne({email});
+    const user = await this.findOne({ email });
     return !!user;
 };
 
-userSchema.pre('save', async function (next){
+userSchema.pre('save', async function (next) {
     const user = this;
-    if(user.isModified('password')){
+    if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8);
     }
     next();
 });
 
-userSchema.methods.isPasswordMatch = async function(password){
+userSchema.methods.isPasswordMatch = async function (password) {
     const user = this;
     return await bcrypt.compare(password, user.password);
-} 
+};
 
 userSchema.plugin(toJson);
 
