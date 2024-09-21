@@ -3,10 +3,9 @@ const { blogService } = require('../services');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const { ImageProcessor } = require('../background-tasks');
-const workers = require('../background-tasks/workers');
 
 const createBlog = catchAsync(async (req, res) => {
-    await blogService.createBlog(req.body, req.user.id);
+    await blogService.createBlog(req.body, await req.user);
     res.status(httpStatus.CREATED).send({
         success: true,
         message: 'Blog created successfully',
@@ -15,6 +14,11 @@ const createBlog = catchAsync(async (req, res) => {
 
 const getBlogs = catchAsync(async (req, res) => {
     const blogs = await blogService.getBlogs(req.body.userId);
+    res.status(httpStatus.OK).json(blogs);
+});
+
+const getRecentBlogs = catchAsync(async (req, res) => {
+    const blogs = await blogService.getRecentBlogs();
     res.status(httpStatus.OK).json(blogs);
 });
 
@@ -27,7 +31,7 @@ const uploadFile = catchAsync(async (req, res) => {
         filename,
         file: req.file,
     });
-    await workers.start();
+    await ImageProcessor.startWorker();
     res.status(httpStatus.OK).json({ filename });
 });
 
@@ -41,6 +45,7 @@ const getFile = catchAsync(async (req, res) => {
 module.exports = {
     createBlog,
     getBlogs,
+    getRecentBlogs,
     uploadFile,
     getFile,
 };

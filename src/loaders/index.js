@@ -4,10 +4,13 @@ const expressLoader = require('./express');
 const logger = require('../config/logger');
 const subscribers = require('../subscribers');
 const EventEmitter = require('../utils/EventEmitter');
+const redisClient = require('../config/redis');
 
 module.exports = async (app) => {
     await mongooseLoader();
     logger.info('Mongoose initiated.');
+    await redisClient.connect();
+    logger.info('Redis connected.');
     await expressLoader(app);
     logger.info('Express app initiated.');
 

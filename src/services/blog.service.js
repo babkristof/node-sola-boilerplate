@@ -1,14 +1,26 @@
 const fs = require('fs');
+const httpStatus = require('http-status');
+const { CacheProcessor } = require('../background-tasks');
 const { Blog } = require('../models');
 const ApiError = require('../utils/ApiError');
-const httpStatus = require('http-status');
 
-const createBlog = async (body, userId) => {
-    await Blog.create({ ...body, createdBy: userId });
+const createBlog = async (body, user) => {
+    await Blog.create({ ...body, createdBy: user.id });
 };
 
 const getBlogs = async (userId) => {
     const blogs = await Blog.find({ createdBy: userId });
+    return blogs;
+};
+
+const getRecentBlogs = async () => {
+    const blogs = await Blog.find()
+        .sort({
+            createdAt: -1,
+        })
+        .limit(10);
+    await CacheProcessor.Queue.add('CacheJob', { blogs });
+    await CacheProcessor.startWorker();
     return blogs;
 };
 
@@ -24,5 +36,6 @@ const getReadableFileStream = async (filename) => {
 module.exports = {
     createBlog,
     getBlogs,
+    getRecentBlogs,
     getReadableFileStream,
 };

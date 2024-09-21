@@ -13,7 +13,7 @@ const verifyCallBack = (req, resolve, reject) => async (err, user, info) => {
 };
 
 const auth = async (req, res, next) => {
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
         passport.authenticate(
             'jwt',
             { session: false },

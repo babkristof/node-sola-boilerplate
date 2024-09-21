@@ -5,12 +5,17 @@ const { blogValidation } = require('../validations');
 const validate = require('../middlewares/validate');
 const { blogController } = require('../controllers');
 const auth = require('../middlewares/auth');
+const getRecentBlogCache = require('../middlewares/caches/recent-blogs');
+
 router.get(
     '/blogs',
     auth,
     validate(blogValidation.getBlogSchema),
     blogController.getBlogs,
 );
+
+router.get('/blogs/recent', getRecentBlogCache, blogController.getRecentBlogs);
+
 router.post(
     '/blog',
     auth,
