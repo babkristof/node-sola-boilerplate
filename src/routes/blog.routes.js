@@ -1,4 +1,5 @@
 const express = require('express');
+const upload = require('../utils/multer');
 const router = express.Router();
 const { blogValidation } = require('../validations');
 const validate = require('../middlewares/validate');
@@ -17,4 +18,12 @@ router.post(
     blogController.createBlog,
 );
 
+router.post(
+    '/blog/cover-image',
+    auth,
+    upload.single('coverImage'),
+    blogController.uploadFile,
+);
+
+router.get('/blog/image/:filename', auth, blogController.getFile);
 module.exports = router;

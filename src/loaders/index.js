@@ -1,3 +1,4 @@
+const fs = require('fs');
 const mongooseLoader = require('./mongoose');
 const expressLoader = require('./express');
 const logger = require('../config/logger');
@@ -12,5 +13,11 @@ module.exports = async (app) => {
 
     Object.keys(subscribers).forEach((eventName) => {
         EventEmitter.on(eventName, subscribers[eventName]);
+    });
+
+    fs.access('uploads', fs.constants.F_OK, async (err) => {
+        if (err) {
+            await fs.promises.mkdir('uploads');
+        }
     });
 };
