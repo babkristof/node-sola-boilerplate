@@ -3,31 +3,18 @@ const path = require('path');
 const config = require('../../config/config');
 const logger = require('../../config/logger');
 
-const startImageProcessor = async () => {
-    const processorPath = path.join(__dirname, 'image-processor.js');
-    const ImageProcessorWorker = new Worker('ImageProcessor', processorPath, {
+const createWorker = async (name, filename) => {
+    const processorPath = path.join(__dirname, filename);
+    const worker = new Worker(name, processorPath, {
         connection: {
             host: config.redis.host,
             port: config.redis.port,
         },
         concurrency: 3,
     });
-    ImageProcessorWorker.on('completed', (job) =>
-        logger.info(`image processor job ${job.id} completed`),
+    worker.on('completed', (job) =>
+        logger.info(`${job.name} with id ${job.id} is completed`),
     );
 };
 
-const startCacheProcessor = async () => {
-    const processorPath = path.join(__dirname, 'cache-processor.js');
-    const CacheProcessorWorker = new Worker('Cache', processorPath, {
-        connection: {
-            host: config.redis.host,
-            port: config.redis.port,
-        },
-    });
-    CacheProcessorWorker.on('completed', (job) =>
-        logger.info(`caching job ${job.id} completed`),
-    );
-};
-
-module.exports = { startImageProcessor, startCacheProcessor };
+module.exports = { createWorker };

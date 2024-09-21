@@ -3,9 +3,11 @@ const httpStatus = require('http-status');
 const { CacheProcessor } = require('../background-tasks');
 const { Blog } = require('../models');
 const ApiError = require('../utils/ApiError');
+const redisClient = require('../config/redis');
 
 const createBlog = async (body, user) => {
     await Blog.create({ ...body, createdBy: user.id });
+    await redisClient.del('recent-blogs');
 };
 
 const getBlogs = async (userId) => {
@@ -20,7 +22,6 @@ const getRecentBlogs = async () => {
         })
         .limit(10);
     await CacheProcessor.Queue.add('CacheJob', { blogs });
-    await CacheProcessor.startWorker();
     return blogs;
 };
 

@@ -31,7 +31,6 @@ const uploadFile = catchAsync(async (req, res) => {
         filename,
         file: req.file,
     });
-    await ImageProcessor.startWorker();
     res.status(httpStatus.OK).json({ filename });
 });
 
