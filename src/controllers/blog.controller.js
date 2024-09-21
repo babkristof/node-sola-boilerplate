@@ -2,6 +2,8 @@ const catchAsync = require('../utils/catchAsync');
 const { blogService } = require('../services');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
+const { ImageProcessor } = require('../background-tasks');
+const workers = require('../background-tasks/workers');
 
 const createBlog = catchAsync(async (req, res) => {
     await blogService.createBlog(req.body, req.user.id);
@@ -20,7 +22,12 @@ const uploadFile = catchAsync(async (req, res) => {
     if (!req.file) {
         throw new ApiError(httpStatus.NOT_FOUND, 'File not found');
     }
-    const filename = await blogService.uploadFile(req.file);
+    const filename = `image-${Date.now()}.webp`;
+    await ImageProcessor.Queue.add('ImageProcessorJob', {
+        filename,
+        file: req.file,
+    });
+    await workers.start();
     res.status(httpStatus.OK).json({ filename });
 });
 
